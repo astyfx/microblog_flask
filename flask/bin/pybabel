@@ -1,4 +1,4 @@
-#!/Users/astyfx/microblog/flask/bin/python
+#!/Users/astyfx/microblog_flask/flask/bin/python
 # EASY-INSTALL-ENTRY-SCRIPT: 'Babel==0.9.6','console_scripts','pybabel'
 __requires__ = 'Babel==0.9.6'
 import sys
