@@ -1,8 +1,11 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from forms import LoginForm
+from forms import LoginForm, EditForm
 from models import User, ROLE_USER, ROLE_ADMIN
+from datetime import datetime
+
+from flask import request # for shutdown server manualy
 
 @lm.user_loader
 def load_user(id):
@@ -11,6 +14,10 @@ def load_user(id):
 @app.before_request
 def before_request():
     g.user = current_user
+    if g.user.is_authenticated():
+        g.user.last_seen = datetime.utcnow()
+        db.session.add(g.user)
+        db.session.commit()
     
 @app.route('/')
 @app.route('/index')
@@ -83,4 +90,42 @@ def user(nickname):
 		{ 'author': user, 'body': 'Test post #2'}
 	]
 	return render_template('user.html', user = user, posts = posts)
-	
+
+@app.route('/edit', methods = ['GET', 'POST'])
+@login_required
+def edit():
+    form = EditForm(g.user.nickname)
+    if form.validate_on_submit():
+        g.user.nickname = form.nickname.data
+        g.user.about_me = form.about_me.data
+        db.session.add(g.user)
+        db.session.commit()
+        flash('Your changes have been saved.')
+        return redirect(url_for('edit'))
+    else:
+        form.nickname.data = g.user.nickname
+        form.about_me.data = g.user.about_me
+    return render_template('edit.html', form = form)
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+# shutdown server route
+@app.route('/shutdown', methods=['GET', 'POST'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
+
+# error handling part
+@app.errorhandler(404)
+def internal_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internel_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+    
