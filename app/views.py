@@ -1,11 +1,10 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from forms import LoginForm, EditForm
-from models import User, ROLE_USER, ROLE_ADMIN
+from forms import LoginForm, EditForm, PostForm
+from models import User, ROLE_USER, ROLE_ADMIN, Post
 from datetime import datetime
-
-from flask import request # for shutdown server manualy
+from config import POSTS_PER_PAGE
 
 @lm.user_loader
 def load_user(id):
@@ -18,25 +17,32 @@ def before_request():
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
-    
-@app.route('/')
-@app.route('/index')
+
+@app.errorhandler(404)
+def internal_error(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    db.session.rollback()
+    return render_template('500.html'), 500
+
+@app.route('/', methods = ['GET', 'POST'])
+@app.route('/index', methods = ['GET', 'POST'])
+@app.route('/index/<int:page>', methods = ['GET', 'POST'])
 @login_required
-def index():
-    user = g.user
-    posts = [
-        { 
-            'author': { 'nickname': 'John' }, 
-            'body': 'Beautiful day in Portland!' 
-        },
-        { 
-            'author': { 'nickname': 'Susan' }, 
-            'body': 'The Avengers movie was so cool!' 
-        }
-    ]
+def index(page = 1):
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(body = form.post.data, timestamp = datetime.utcnow(), author = g.user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('index'))
+    posts = g.user.followed_posts().paginate(page, POSTS_PER_PAGE, False)
     return render_template('index.html',
         title = 'Home',
-        user = user,
+        form = form,
         posts = posts)
 
 @app.route('/login', methods = ['GET', 'POST'])
@@ -63,12 +69,14 @@ def after_login(resp):
         nickname = resp.nickname
         if nickname is None or nickname == "":
             nickname = resp.email.split('@')[0]
+        nickname = User.make_unique_nickname(nickname)
         user = User(nickname = nickname, email = resp.email, role = ROLE_USER)
         db.session.add(user)
         db.session.commit()
-        # make the user follow him/herself
-        db.session.add(user.follow(user))
-        db.session.commit()
+        # make user follow him/herself
+        if not user.is_following(user):
+            db.session.add(user.follow(user))
+            db.session.commit()
     remember_me = False
     if 'remember_me' in session:
         remember_me = session['remember_me']
@@ -80,19 +88,20 @@ def after_login(resp):
 def logout():
     logout_user()
     return redirect(url_for('index'))
-
+    
 @app.route('/user/<nickname>')
+@app.route('/user/<nickname>/<int:page>')
 @login_required
-def user(nickname):
-	user = User.query.filter_by(nickname = nickname).first()
-	if user == None:
-		flash('User' + nickname + ' not found.')
-		return redirect(url_for('index'))
-	posts = [
-		{ 'author': user, 'body': 'Test post #1'},
-		{ 'author': user, 'body': 'Test post #2'}
-	]
-	return render_template('user.html', user = user, posts = posts)
+def user(nickname, page = 1):
+    user = User.query.filter_by(nickname = nickname).first()
+    if user == None:
+        flash('User ' + nickname + ' not found.')
+        return redirect(url_for('index'))
+    posts = user.posts.paginate(page, POSTS_PER_PAGE, False)
+    #posts = posts.query.order_by(Post.timestamp.desc())
+    return render_template('user.html',
+        user = user,
+        posts = posts)
 
 @app.route('/edit', methods = ['GET', 'POST'])
 @login_required
@@ -105,40 +114,17 @@ def edit():
         db.session.commit()
         flash('Your changes have been saved.')
         return redirect(url_for('edit'))
-    else:
+    elif request.method != "POST":
         form.nickname.data = g.user.nickname
         form.about_me.data = g.user.about_me
-    return render_template('edit.html', form = form)
+    return render_template('edit.html',
+        form = form)
 
-def shutdown_server():
-    func = request.environ.get('werkzeug.server.shutdown')
-    if func is None:
-        raise RuntimeError('Not running with the Werkzeug Server')
-    func()
-
-# shutdown server route
-@app.route('/shutdown', methods=['GET', 'POST'])
-def shutdown():
-    shutdown_server()
-    return 'Server shutting down...'
-
-# error handling part
-@app.errorhandler(404)
-def internal_error(error):
-    return render_template('404.html'), 404
-
-@app.errorhandler(500)
-def internel_error(error):
-    db.session.rollback()
-    return render_template('500.html'), 500
-    
-
-# follow and unfollow function
 @app.route('/follow/<nickname>')
 def follow(nickname):
     user = User.query.filter_by(nickname = nickname).first()
     if user == None:
-        flash('User' + nickname + ' not found.')
+        flash('User ' + nickname + ' not found.')
         return redirect(url_for('index'))
     if user == g.user:
         flash('You can\'t follow yourself!')
@@ -169,3 +155,14 @@ def unfollow(nickname):
     db.session.commit()
     flash('You have stopped following ' + nickname + '.')
     return redirect(url_for('user', nickname = nickname))
+
+def shutdown_server():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+@app.route('/shutdown', methods = ['POST', 'GET'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutdowned'
