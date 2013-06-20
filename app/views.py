@@ -1,10 +1,11 @@
 from flask import render_template, flash, redirect, session, url_for, request, g
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from app import app, db, lm, oid
-from forms import LoginForm, EditForm, PostForm
+from forms import LoginForm, EditForm, PostForm, SearchForm
 from models import User, ROLE_USER, ROLE_ADMIN, Post
 from datetime import datetime
-from config import POSTS_PER_PAGE
+from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
+from emails import follower_notification
 
 @lm.user_loader
 def load_user(id):
@@ -17,6 +18,7 @@ def before_request():
         g.user.last_seen = datetime.utcnow()
         db.session.add(g.user)
         db.session.commit()
+        g.search_form = SearchForm()
 
 @app.errorhandler(404)
 def internal_error(error):
@@ -121,6 +123,7 @@ def edit():
         form = form)
 
 @app.route('/follow/<nickname>')
+@login_required
 def follow(nickname):
     user = User.query.filter_by(nickname = nickname).first()
     if user == None:
@@ -136,6 +139,7 @@ def follow(nickname):
     db.session.add(u)
     db.session.commit()
     flash('You are now following ' + nickname + '!')
+    follower_notification(user, g.user)
     return redirect(url_for('user', nickname = nickname))
 
 @app.route('/unfollow/<nickname>')
@@ -166,3 +170,18 @@ def shutdown_server():
 def shutdown():
     shutdown_server()
     return 'Server shutdowned'
+
+@app.route('/search', methods = ['POST'])
+@login_required
+def search():
+    if not g.search_form.validate_on_submit():
+        return redirect(url_for('index'))
+    return redirect(url_for('search_results', query = g.search_form.search.data))
+
+@app.route('/search_results/<query>')
+@login_required
+def search_results(query):
+    results = Post.query.whoosh_search(query, MAX_SEARCH_RESULTS).all()
+    return render_template('search_results.html',
+        query = query,
+        results = results)

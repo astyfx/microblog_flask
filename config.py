@@ -15,14 +15,21 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 # mail server settings
-MAIL_SERVER = 'localhost'
-MAIL_PORT = 25
-MAIL_USERNAME = None
-MAIL_PASSWORD = None
+MAIL_SERVER = 'smtp.googlemail.com'
+MAIL_PORT = 465
+MAIL_USE_TLS = False
+MAIL_USE_SSL = True
+MAIL_USERNAME = 'astyfx'
+MAIL_PASSWORD = 'dotmxl4132'
 
 # administrator list
-ADMINS = ['you@example.com']
+ADMINS = ['astyfx@gmail.com']
 
 # pagination
 POSTS_PER_PAGE = 3
 
+# for Full Text Search Engine
+WHOOSH_BASE = os.path.join(basedir, 'search.db')
+
+# how many search results should be returned as a maximum
+MAX_SEARCH_RESULTS = 50

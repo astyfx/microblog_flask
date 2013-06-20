@@ -1,5 +1,6 @@
-from app import db
+from app import db, app
 from hashlib import md5
+import flask.ext.whooshalchemy as whooshalchemy
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -71,10 +72,14 @@ class User(db.Model):
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.timestamp.desc())
 
 class Post(db.Model):
-	id = db.Column(db.Integer, primary_key = True)
-	body = db.Column(db.String(140))
-	timestamp = db.Column(db.DateTime)
-	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    __searchable__ = ['body']
 
-	def __repr__(self):
-		return '<post %r>' % (self.body)
+    id = db.Column(db.Integer, primary_key = True)
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    def __repr__(self):
+        return '<post %r>' % (self.body)
+
+whooshalchemy.whoosh_index(app, Post)
