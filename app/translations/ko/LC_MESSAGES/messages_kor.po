@@ -1,0 +1,216 @@
+# Korean translations for PROJECT.
+# Copyright (C) 2013 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2013-06-20 21:53+0900\n"
+"PO-Revision-Date: 2013-06-20 22:03+0900\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: app/__init__.py:17
+msgid "Please log in to access this page."
+msgstr "로그인이 필요합니다."
+
+#: app/forms.py:24
+msgid ""
+"This nickname has invalid characters. Please use letters, numbers, dots and "
+"underscores only."
+msgstr "잘못된 별명입니다. 글자, 숫자, 점, 밑줄만 사용가능합니다."
+
+#: app/forms.py:28
+msgid "This nickname is already in use. Please choose another one."
+msgstr "별명이 이미 사용중입니다. 다른 별명을 입력해주세요."
+
+#: app/views.py:60
+msgid "Your post is now live!"
+msgstr "당신의 글이 포스팅 되었습니다."
+
+#: app/views.py:85
+msgid "Invalid login. Please try again."
+msgstr "잘못된 로그인입니다. 다시 시도해주십시오."
+
+#: app/views.py:118
+#, python-format
+msgid "User %(nickname)s not found."
+msgstr "%(nickname)s 사용자가 없습니다."
+
+#: app/views.py:134
+msgid "Your changes have been saved."
+msgstr "수정사항이 저장되었습니다."
+
+#: app/views.py:150
+msgid "You can't follow yourself!"
+msgstr "자신을 팔로우 할 수 없습니다."
+
+#: app/views.py:154
+#, python-format
+msgid "Cannot follow %(nickname)s."
+msgstr "%(nickname)s을 팔로우 할 수 없습니다."
+
+#: app/views.py:158
+#, python-format
+msgid "You are now following %(nickname)s!"
+msgstr "지금부터 %(nickname)s을 팔로우 합니다."
+
+#: app/views.py:170
+msgid "You can't unfollow yourself!"
+msgstr "자신을 언팔로우 할 수 업습니다."
+
+#: app/views.py:174
+#, python-format
+msgid "Cannot unfollow %(nickname)s."
+msgstr "%(nickname)s을 언팔로우 할 수 없습니다."
+
+#: app/views.py:178
+#, python-format
+msgid "You have stopped following %(nickname)s."
+msgstr "%(nickname)s를 팔로우하는 것을 그만두었습니다."
+
+#: app/templates/404.html:5
+msgid "File Not Found"
+msgstr "파일이 없습니다."
+
+#: app/templates/404.html:6 app/templates/500.html:7
+msgid "Back"
+msgstr "뒤로"
+
+#: app/templates/500.html:5
+msgid "An unexpected error has occurred"
+msgstr "예상치 못한 에러가 발생했습니다."
+
+#: app/templates/500.html:6
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr "관리자에게 알려졌습니다. 불편에 대해 사과드립니다."
+
+#: app/templates/base.html:30
+msgid "Home"
+msgstr "홈"
+
+#: app/templates/base.html:32
+msgid "Your Profile"
+msgstr "프로필"
+
+#: app/templates/base.html:33
+msgid "Logout"
+msgstr "로그아웃"
+
+#: app/templates/base.html:38
+msgid "Search"
+msgstr "검색"
+
+#: app/templates/edit.html:5
+msgid "Edit Your Profile"
+msgstr "프로필 편집"
+
+#: app/templates/edit.html:11
+msgid "Your nickname:"
+msgstr "내 별명:"
+
+#: app/templates/edit.html:20
+msgid "About yourself:"
+msgstr "당신에 관하여:"
+
+#: app/templates/edit.html:30
+msgid "Save Changes"
+msgstr "변경사항저장"
+
+#: app/templates/follower_email.html:2
+#, python-format
+msgid "%(nickname)s is now a follower."
+msgstr "지금부터 %(nickname)s이 팔로워입니다."
+
+#: app/templates/follower_email.html:12
+msgid "Regards,"
+msgstr "안부를 전하며,"
+
+#: app/templates/follower_email.html:13
+msgid "The <code>microblog</code> admin"
+msgstr ""
+
+#: app/templates/index.html:5
+#, python-format
+msgid "Hi, %(nickname)s!"
+msgstr "안녕하세요, %(nickname)s님!"
+
+#: app/templates/index.html:11
+msgid "Say something:"
+msgstr "글남기기:"
+
+#: app/templates/index.html:21
+msgid "Post!"
+msgstr "게시!"
+
+#: app/templates/index.html:31 app/templates/index.html:33
+#: app/templates/user.html:30 app/templates/user.html:32
+msgid "Newer posts"
+msgstr "새로운 글"
+
+#: app/templates/index.html:36 app/templates/index.html:38
+#: app/templates/user.html:35 app/templates/user.html:37
+msgid "Older posts"
+msgstr "이전 글"
+
+#: app/templates/login.html:20
+msgid "Please Sign In"
+msgstr "로그인 해주세요."
+
+#: app/templates/login.html:23
+msgid "Click on your OpenID provider below:"
+msgstr "아래에서 당신의 OpenID 제공자를 선택하세요"
+
+#: app/templates/login.html:30
+msgid "Or enter your OpenID here:"
+msgstr "또는 당신의 오픈아이디를 여기에 입력하세요"
+
+#: app/templates/login.html:41
+msgid "Remember Me"
+msgstr "기억하기"
+
+#: app/templates/login.html:47
+msgid "Sign In"
+msgstr "로그인"
+
+#: app/templates/post.html:6
+#, python-format
+msgid "%(nickname)s said %(when)s:"
+msgstr "%(when)s에 남긴 %(nickname)s의 글:"
+
+#: app/templates/search_results.html:5
+#, python-format
+msgid "Search results for \"%(query)s\":"
+msgstr "\"%(query)s\"의 검색결과:"
+
+#: app/templates/user.html:13
+msgid "Last seen:"
+msgstr "마지막 방문:"
+
+#: app/templates/user.html:15
+msgid "Followers:"
+msgstr "팔로워:"
+
+#: app/templates/user.html:15
+msgid "Following:"
+msgstr "팔로잉:"
+
+#: app/templates/user.html:17
+msgid "Edit your profile"
+msgstr "프로필 편집"
+
+#: app/templates/user.html:19
+msgid "Follow"
+msgstr "팔로우"
+
+#: app/templates/user.html:21
+msgid "Unfollow"
+msgstr "언팔로우"

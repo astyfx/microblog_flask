@@ -1,3 +1,4 @@
+# -*- coding: utf8 -*-
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,23 +14,25 @@ OPENID_PROVIDERS = [
     
 SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+WHOOSH_BASE = os.path.join(basedir, 'search.db')
 
-# mail server settings
-MAIL_SERVER = 'smtp.googlemail.com'
-MAIL_PORT = 465
+# email server
+MAIL_SERVER = 'your.mailserver.com'
+MAIL_PORT = 25
 MAIL_USE_TLS = False
-MAIL_USE_SSL = True
-MAIL_USERNAME = 'astyfx'
-MAIL_PASSWORD = 'dotmxl4132'
+MAIL_USE_SSL = False
+MAIL_USERNAME = 'you'
+MAIL_PASSWORD = 'your-password'
+
+# available languages
+LANGUAGES = {
+    'en': 'English',
+    'es': 'Español'
+}
 
 # administrator list
-ADMINS = ['astyfx@gmail.com']
+ADMINS = ['you@example.com']
 
 # pagination
 POSTS_PER_PAGE = 3
-
-# for Full Text Search Engine
-WHOOSH_BASE = os.path.join(basedir, 'search.db')
-
-# how many search results should be returned as a maximum
 MAX_SEARCH_RESULTS = 50
