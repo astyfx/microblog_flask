@@ -36,3 +36,12 @@ ADMINS = ['you@example.com']
 # pagination
 POSTS_PER_PAGE = 3
 MAX_SEARCH_RESULTS = 50
+
+# microsoft translation service
+#MS_TRANSLATOR_CLIENT_ID = ''
+
+SQLALCHEMY_RECORD_QUERIES = True
+
+# slow databse query threshold (in seconds)
+DATABASE_QUERY_TIMEOUT = 0.5
+

@@ -8,6 +8,9 @@ from datetime import datetime
 from emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
 from config import LANGUAGES
+from guess_language import guessLanguage
+from flask.ext.sqlalchemy import get_debug_queries
+from config import DATABASE_QUERY_TIMEOUT
 
 def shutdown_server():
     func = request.environ.get('werkzeug.server.shutdown')
@@ -54,6 +57,9 @@ def internal_error(error):
 def index(page = 1):
     form = PostForm()
     if form.validate_on_submit():
+        #langueage = guessLanguage(form.post.data)
+        #if language == 'UNKNOWN' or len(language) > 5:
+        #    language = ''
         post = Post(body = form.post.data, timestamp = datetime.utcnow(), author = g.user)
         db.session.add(post)
         db.session.commit()
@@ -193,3 +199,25 @@ def search_results(query):
         query = query,
         results = results)
 
+@app.route('/delete/<int:id>')
+@login_required
+def delete(id):
+    post = Post.query.get(id)
+    if post == None:
+        flash('Post not found.')
+        return redirect(url_for('index'))
+    if post.author.id != g.user.id:
+        flash('You cannot delete this post.')
+        return redirect(url_for('index'))
+    db.session.delete(post)
+    db.session.commit()
+    flash('Your post has been deleted.')
+    return redirect(url_for('index'))
+
+@app.after_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= DATABASE_QUERY_TIMEOUT:
+            app.logger.warning("SLOW QUERY: %s\nParameters: %s\nDuration: %fs\nContext: %s\n" % (query.statement, query.parameters, query.duration, query.context))
+    return response
+    
