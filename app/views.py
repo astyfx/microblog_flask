@@ -7,7 +7,7 @@ from models import User, ROLE_USER, ROLE_ADMIN, Post
 from datetime import datetime
 from emails import follower_notification
 from config import POSTS_PER_PAGE, MAX_SEARCH_RESULTS
-from config import LANGUAGES
+from config import LANGUAGES, WHOOSH_ENABLED
 from guess_language import guessLanguage
 from flask.ext.sqlalchemy import get_debug_queries
 from config import DATABASE_QUERY_TIMEOUT
@@ -40,6 +40,7 @@ def before_request():
         db.session.commit()
         g.search_form = SearchForm()
     g.locale = get_locale()
+    g.search_enabled = WHOOSH_ENABLED
 
 @app.errorhandler(404)
 def internal_error(error):
