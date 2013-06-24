@@ -1,9 +1,8 @@
 from hashlib import md5
 from app import db
 from app import app
-import flask.ext.whooshalchemy as whooshalchemy
-import re
 from config import WHOOSH_ENABLED
+import re
 
 ROLE_USER = 0
 ROLE_ADMIN = 1
@@ -12,10 +11,6 @@ followers = db.Table('followers',
     db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
     db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
 )
-
-if WHOOSH_ENABLED:
-    import flask.ext.whooshalchemy as whooshalchemy
-    whooshalchemy.whoosh_index(app, Post)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
@@ -78,7 +73,7 @@ class User(db.Model):
 
     def followed_posts(self):
         return Post.query.join(followers, (followers.c.followed_id == Post.user_id)).filter(followers.c.follower_id == self.id).order_by(Post.timestamp.desc())
-        
+
     def __repr__(self): # pragma: no cover
         return '<User %r>' % (self.nickname)    
         
@@ -90,8 +85,10 @@ class Post(db.Model):
     timestamp = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     language = db.Column(db.String(5))
-
+    
     def __repr__(self): # pragma: no cover
         return '<Post %r>' % (self.body)
         
-whooshalchemy.whoosh_index(app, Post)
+if WHOOSH_ENABLED:
+    import flask.ext.whooshalchemy as whooshalchemy
+    whooshalchemy.whoosh_index(app, Post)
